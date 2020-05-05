@@ -1,0 +1,24 @@
+{
+  "name": "employeetracker",
+  "version": "1.0.0",
+  "description": "Tracks all employees. Allows you to view specifiec details for employees and departments.",
+  "main": "employees.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jvernot/EmployeeTracker.git"
+  },
+  "author": "Jason Vernot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jvernot/EmployeeTracker/issues"
+  },
+  "homepage": "https://github.com/jvernot/EmployeeTracker#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^7.1.0",
+    "mysql": "^2.18.1"
+  }
+}
