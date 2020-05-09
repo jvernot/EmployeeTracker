@@ -7,7 +7,7 @@ const inquirer = require('inquirer');
 var app = express();
 
 // Set the port for the application
-var PORT = process.env.PORT || 8080;
+var PORT = process.env.PORT || 7070;
 
 // MySQL DB Connection Information
 var connection = mysql.createConnection({
@@ -81,6 +81,51 @@ const addElement = () => {
         });
 };
 
+const addDepartment = () => {
+    inquirer
+        .prompt({
+        name: 'department',
+        type: 'input',
+        message: 'What is the name of the department to be added?'
+        })
+        .then(answer => {
+        console.log(answer.department);
+
+        connection.query('INSERT INTO department (name) VALUES ?', [answer.department], (err, res) => {
+          if (err) throw err;
+
+          console.log(`Department Added`);
+          promptUser();
+        });
+    });
+}
+
+const addRole = () => {
+  inquirer
+    .prompt({
+    name: 'title',
+    type: 'input',
+    message: 'What is the role title?'},
+    {
+      name: 'salary',
+      type: 'input',
+      message: 'What is the salary for this role?'
+    })
+    .then(answer => {
+
+      const { title, salary } = answer;
+
+      connection.query('INSERT INTO role (title, salary) VALUES ?', [title, salary], (err, res) => {
+        if (err) throw err;
+
+        console.log(`Role Added`);
+        promptUser();
+      });
+    });
+}
+
+
+
 const viewElement = () => {
 
 };
@@ -104,6 +149,6 @@ const updateEmployee = () => {
 
 
 app.listen(PORT, function() {
-    console.log("Server listening on: http://localhost:" + PORT);
+    console.log("Server Connected!");
 });
 
