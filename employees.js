@@ -23,8 +23,85 @@ connection.connect(err => {
     if (err) throw err;
 
     console.log("connected as id " + connection.threadId);
-    //run the first inquirer function
+    promptUser();
 });
+
+const promptUser = () => {
+    inquirer
+        .prompt({
+            name: 'action',
+            type: 'list',
+            message: 'What would you like to do?',
+            choices: ['Add to departments, roles, or employees.', 'View departments, roles or employees.', 'Update emplyee roles', 'exit']
+        })
+        .then(answer => {
+            switch (answer.action) {
+              case 'Add to departments, roles, or employees.':
+                addElement();
+                break;
+      
+              case 'View departments, roles or employees.':
+                viewElement();
+                break;
+      
+              case 'Update emplyee roles':
+                updateEmployee();
+                break;
+      
+              case 'exit':
+                connection.end();
+                break;
+            }
+        });
+};
+
+const addElement = () => {
+    inquirer
+        .prompt({
+            name: 'table',
+            type: 'list',
+            message: 'What list would you like to add to?',
+            choices: ['Departments', 'Roles', 'Employees']
+        })
+        .then(answer => {
+            switch (answer.action) {
+              case 'Departments':
+                addDepartment();
+                break;
+      
+              case 'Roles':
+                addRole();
+                break;
+      
+              case 'Employees':
+                addEmployee();
+                break;
+
+            }
+        });
+};
+
+const viewElement = () => {
+
+};
+
+const updateEmployee = () => {
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.listen(PORT, function() {
     console.log("Server listening on: http://localhost:" + PORT);
