@@ -64,7 +64,7 @@ const addElement = () => {
             choices: ['Departments', 'Roles', 'Employees']
         })
         .then(answer => {
-            switch (answer.action) {
+            switch (answer.table) {
               case 'Departments':
                 addDepartment();
                 break;
@@ -91,38 +91,96 @@ const addDepartment = () => {
         .then(answer => {
         console.log(answer.department);
 
-        connection.query('INSERT INTO department (name) VALUES ?', [answer.department], (err, res) => {
+        connection.query('INSERT INTO department (name) VALUES (?)', [answer.department], (err, res) => {
           if (err) throw err;
 
           console.log(`Department Added`);
           promptUser();
         });
     });
-}
+};
 
-const addRole = () => {
-  inquirer
-    .prompt({
+async function addRole() {
+
+  const questions = [
+    {
     name: 'title',
     type: 'input',
-    message: 'What is the role title?'},
+    message: 'What is the role title?'
+    },
     {
       name: 'salary',
       type: 'input',
       message: 'What is the salary for this role?'
-    })
-    .then(answer => {
+    }];
 
-      const { title, salary } = answer;
+    try {
+      const answers = await inquirer .prompt(questions);
 
-      connection.query('INSERT INTO role (title, salary) VALUES ?', [title, salary], (err, res) => {
+      await connection.query('INSERT INTO role (title, salary) VALUES (?, ?)', [answers.title, answers.salary], (err, res) => {
         if (err) throw err;
 
         console.log(`Role Added`);
         promptUser();
       });
-    });
-}
+    }
+    catch(err) {
+      console.log(err);
+    }
+};
+
+const addEmployee = () => {
+  const questions = [
+    {
+    name: 'title',
+    type: 'input',
+    message: 'What is the role title?'
+    },
+    {
+      name: 'salary',
+      type: 'input',
+      message: 'What is the salary for this role?'
+    }];
+
+    try {
+      const answers = await inquirer .prompt(questions);
+
+      await connection.query('INSERT INTO role (title, salary) VALUES (?, ?)', [answers.title, answers.salary], (err, res) => {
+        if (err) throw err;
+
+        console.log(`Role Added`);
+        promptUser();
+      });
+    }
+    catch(err) {
+      console.log(err);
+    }
+};
+
+
+
+
+  // inquirer
+  //   .prompt(
+  //   {
+  //   name: 'title',
+  //   type: 'input',
+  //   message: 'What is the role title?'
+  // },
+  //   {
+  //     name: 'salary',
+  //     type: 'input',
+  //     message: 'What is the salary for this role?'
+  //   })
+    // .then(answer => {
+
+    //   connection.query('INSERT INTO role (title, salary) VALUES (?)', [answer.title, answer.salary], (err, res) => {
+    //     if (err) throw err;
+
+    //     console.log(`Role Added`);
+    //     promptUser();
+    //   });
+    // });
 
 
 
