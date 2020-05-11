@@ -56,6 +56,8 @@ const promptUser = () => {
 };
 
 
+
+
 const viewEmployees = () => {
   const query = 'SELECT * FROM employee';
   connection.query(query, (err, res) => {
@@ -116,87 +118,47 @@ const addDepartment = () => {
     });
 };
 
-async function addRole() {
+addRole = () => {
+  let departments = [];
 
-  const questions = [
-    {
-    name: 'title',
-    type: 'input',
-    message: 'What is the role title?'
-    },
-    {
-      name: 'salary',
-      type: 'input',
-      message: 'What is the salary for this role?'
-    }];
+  connection.query(`SELECT * FROM department`, (err, data) => {
+    if (err) throw err;
 
-    try {
-      const answers = await inquirer .prompt(questions);
+    data.forEach(dept => departments.push(dept));
+  });
 
-      await connection.query('INSERT INTO role (title, salary) VALUES (?, ?)', [answers.title, answers.salary], (err, res) => {
+  inquirer
+    .prompt([
+      {
+        name: 'title',
+        type: 'input',
+        message: 'What is the role title?'
+        },
+        {
+          name: 'salary',
+          type: 'input',
+          message: 'What is the salary for this role?'
+        },
+        {
+          name: 'department_id',
+          type: 'list',
+          message: 'What department is this role in?',
+          choices: departments
+        }
+    ]) 
+    .then(function({ title, salary, department_id }) {
+      // let index = departments.indexOf(department_id);
+
+      connection.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [title, salary, department_id], (err, res) => {
         if (err) throw err;
-
+  
         console.log(`Role Added`);
         promptUser();
       });
-    }
-    catch(err) {
-      console.log(err);
-    }
+    })
 };
 
-// const addEmployee = () => {
-//   const questions = [
-//     {
-//     name: 'firstName',
-//     type: 'input',
-//     message: 'What is the employees first name?'
-//     },
-//     {
-//       name: 'lastName',
-//       type: 'input',
-//       message: 'What is the employees last name?'
-//     }];
 
-//     try {
-//       const answers = await inquirer .prompt(questions);
-
-//       await connection.query('INSERT INTO role (title, salary) VALUES (?, ?)', [answers.title, answers.salary], (err, res) => {
-//         if (err) throw err;
-
-//         console.log(`Role Added`);
-//         promptUser();
-//       });
-//     }
-//     catch(err) {
-//       console.log(err);
-//     }
-// };
-
-
-
-
-  // inquirer
-  //   .prompt(
-  //   {
-  //   name: 'title',
-  //   type: 'input',
-  //   message: 'What is the role title?'
-  // },
-  //   {
-  //     name: 'salary',
-  //     type: 'input',
-  //     message: 'What is the salary for this role?'
-  //   })
-    // .then(answer => {
-
-    //   connection.query('INSERT INTO role (title, salary) VALUES (?)', [answer.title, answer.salary], (err, res) => {
-    //     if (err) throw err;
-
-    //     console.log(`Role Added`);
-    //     promptUser();
-    //   });
-    // });
 
 
 
