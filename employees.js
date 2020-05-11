@@ -118,7 +118,7 @@ const addDepartment = () => {
     });
 };
 
-addRole = () => {
+const addRole = () => {
   let departments = [];
 
   connection.query(`SELECT * FROM department`, (err, data) => {
@@ -156,6 +156,64 @@ addRole = () => {
         promptUser();
       });
     })
+};
+
+const addEmployee = () => {
+  let employees = [];
+  let roles = [];
+
+  connection.query(`SELECT * FROM employee`, (err, data) => {
+    if (err) throw err;
+
+    data.forEach(empl => employees.push(empl));
+  });
+
+  connection.query(`SELECT * FROM role`, (err, data) => {
+    if (err) throw err;
+
+    data.forEach(job => roles.push(job));
+  });
+
+  inquirer
+    .prompt([
+      {
+        name: 'first_name',
+        type: 'input',
+        message: 'What is the employees first name?'
+      },
+      {
+        name: 'last_name',
+        type: 'input',
+        message: 'What is the employees last name?'
+      },
+      {
+        name: 'role_id',
+        type: 'list',
+        message: 'What is their role?',
+        choices: roles
+      },
+      {
+        name: 'manager_id',
+        type: 'list',
+        message: 'Who is their manager?',
+        choices: employees
+      }
+    ])
+    .then(function ({ first_name, last_name, role_id, manager_id }) {
+      let queryText = `INSERT INTO employee (first_name, last_name, role_id`;
+      if (manager_id != 'none') {
+          queryText += `, manager_id) VALUES ('${first_name}', '${last_name}', ${roles.indexOf(role_id)}, ${employees.indexOf(manager_id) + 1})`
+      } else {
+          queryText += `) VALUES ('${first_name}', '${last_name}', ${roles.indexOf(role_id) + 1})`
+      }
+      console.log(queryText)
+
+      connection.query(queryText, function (err, data) {
+        if (err) throw err;
+
+        promptUser();
+      });
+    });
 };
 
 
