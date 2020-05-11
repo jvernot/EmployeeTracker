@@ -32,7 +32,7 @@ const promptUser = () => {
             name: 'action',
             type: 'list',
             message: 'What would you like to do?',
-            choices: ['Add to departments, roles, or employees.', 'View departments, roles or employees.', 'Update emplyee roles', 'exit']
+            choices: ['View all employees', 'Add to departments, roles, or employees.', 'Update emplyee roles', 'exit']
         })
         .then(answer => {
             switch (answer.action) {
@@ -40,8 +40,8 @@ const promptUser = () => {
                 addElement();
                 break;
       
-              case 'View departments, roles or employees.':
-                viewElement();
+              case 'View all employees':
+                viewEmployees();
                 break;
       
               case 'Update emplyee roles':
@@ -54,6 +54,22 @@ const promptUser = () => {
             }
         });
 };
+
+
+const viewEmployees = () => {
+  const query = 'SELECT * FROM employee';
+  connection.query(query, (err, res) => {
+    if (err) throw err;
+
+   console.table(res);
+
+    promptUser();
+  });
+}
+
+
+
+
 
 const addElement = () => {
     inquirer
@@ -129,33 +145,33 @@ async function addRole() {
     }
 };
 
-const addEmployee = () => {
-  const questions = [
-    {
-    name: 'title',
-    type: 'input',
-    message: 'What is the role title?'
-    },
-    {
-      name: 'salary',
-      type: 'input',
-      message: 'What is the salary for this role?'
-    }];
+// const addEmployee = () => {
+//   const questions = [
+//     {
+//     name: 'firstName',
+//     type: 'input',
+//     message: 'What is the employees first name?'
+//     },
+//     {
+//       name: 'lastName',
+//       type: 'input',
+//       message: 'What is the employees last name?'
+//     }];
 
-    try {
-      const answers = await inquirer .prompt(questions);
+//     try {
+//       const answers = await inquirer .prompt(questions);
 
-      await connection.query('INSERT INTO role (title, salary) VALUES (?, ?)', [answers.title, answers.salary], (err, res) => {
-        if (err) throw err;
+//       await connection.query('INSERT INTO role (title, salary) VALUES (?, ?)', [answers.title, answers.salary], (err, res) => {
+//         if (err) throw err;
 
-        console.log(`Role Added`);
-        promptUser();
-      });
-    }
-    catch(err) {
-      console.log(err);
-    }
-};
+//         console.log(`Role Added`);
+//         promptUser();
+//       });
+//     }
+//     catch(err) {
+//       console.log(err);
+//     }
+// };
 
 
 
@@ -184,9 +200,7 @@ const addEmployee = () => {
 
 
 
-const viewElement = () => {
 
-};
 
 const updateEmployee = () => {
 
