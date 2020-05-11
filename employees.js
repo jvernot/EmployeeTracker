@@ -45,7 +45,7 @@ const promptUser = () => {
                 break;
       
               case 'Update emplyee roles':
-                updateEmployee();
+                updateRoles();
                 break;
       
               case 'exit':
@@ -54,8 +54,6 @@ const promptUser = () => {
             }
         });
 };
-
-
 
 
 const viewEmployees = () => {
@@ -67,10 +65,7 @@ const viewEmployees = () => {
 
     promptUser();
   });
-}
-
-
-
+};
 
 
 const addElement = () => {
@@ -166,52 +161,55 @@ const addEmployee = () => {
     if (err) throw err;
 
     data.forEach(empl => employees.push(empl));
-  });
+  
 
-  connection.query(`SELECT * FROM role`, (err, data) => {
-    if (err) throw err;
+    connection.query(`SELECT * FROM role`, (err, data) => {
+      if (err) throw err;
 
-    data.forEach(job => roles.push(job));
-  });
+      data.forEach(job => roles.push(job));
+    
 
-  inquirer
-    .prompt([
-      {
-        name: 'first_name',
-        type: 'input',
-        message: 'What is the employees first name?'
-      },
-      {
-        name: 'last_name',
-        type: 'input',
-        message: 'What is the employees last name?'
-      },
-      {
-        name: 'role_id',
-        type: 'list',
-        message: 'What is their role?',
-        choices: roles
-      },
-      {
-        name: 'manager_id',
-        type: 'list',
-        message: 'Who is their manager?',
-        choices: employees
-      }
-    ])
-    .then(function ({ first_name, last_name, role_id, manager_id }) {
-      let queryText = `INSERT INTO employee (first_name, last_name, role_id`;
-      if (manager_id != 'none') {
-          queryText += `, manager_id) VALUES ('${first_name}', '${last_name}', ${roles.indexOf(role_id)}, ${employees.indexOf(manager_id) + 1})`
-      } else {
-          queryText += `) VALUES ('${first_name}', '${last_name}', ${roles.indexOf(role_id) + 1})`
-      }
-      console.log(queryText)
+      inquirer
+        .prompt([
+          {
+            name: 'first_name',
+            type: 'input',
+            message: 'What is the employees first name?'
+          },
+          {
+            name: 'last_name',
+            type: 'input',
+            message: 'What is the employees last name?'
+          },
+          {
+            name: 'role_id',
+            type: 'list',
+            message: 'What is their role?',
+            choices: roles
+          },
+          {
+            name: 'manager_id',
+            type: 'list',
+            message: 'Who is their manager?',
+            choices: employees
+          }
+        ])
+        .then(function ({ first_name, last_name, role_id, manager_id }) {
+          let queryText = `INSERT INTO employee (first_name, last_name, role_id`;
+          if (manager_id != 'none') {
+              queryText += `, manager_id) VALUES ('${first_name}', '${last_name}', ${roles.indexOf(role_id)}, ${employees.indexOf(manager_id) + 1})`
+          } else {
+              queryText += `) VALUES ('${first_name}', '${last_name}', ${roles.indexOf(role_id) + 1})`
+          }
+          console.log(queryText)
 
-      connection.query(queryText, function (err, data) {
-        if (err) throw err;
+          connection.query(queryText, function (err, data) {
+            if (err) throw err;
 
-        promptUser();
+            promptUser();
+          });
+        });
+
       });
     });
 };
@@ -222,9 +220,50 @@ const addEmployee = () => {
 
 
 
-const updateEmployee = () => {
+const updateRoles = () => {
+    connection.query(`SELECT * FROM employee`, (err, data) => {
+        if (err) throw err;
 
-};
+        let employees = [];
+        let roles = [];
+
+        connection.query(`SELECT * FROM employee`, (err, data) => {
+          if (err) throw err;
+      
+          data.forEach(empl => employees.push(empl));
+        
+
+          connection.query(`SELECT * FROM role`, (err, data) => {
+            if (err) throw err;
+        
+            data.forEach(job => roles.push(job));
+          
+              inquirer
+                  .prompt([
+                      {
+                          name: 'employee_id',
+                          message: "Who's role needs to be updated",
+                          type: 'list',
+                          choices: employees
+                      },
+                      {
+                          name: 'role_id',
+                          message: "What is the new role?",
+                          type: 'list',
+                          choices: roles
+                      }
+                  ]).then(function ({ employee_id, role_id }) {
+                      
+                    connection.query(`UPDATE employee SET role_id = ${roles.indexOf(role_id) + 1} WHERE id = ${employees.indexOf(employee_id) + 1}`, function (err, data) {
+                      if (err) throw err;
+
+                      promptUser();
+                    })
+                  })
+            });
+          })
+        })
+    }
 
 
 
