@@ -57,8 +57,8 @@ const promptUser = () => {
 
 
 const viewEmployees = () => {
-  const query = 'SELECT * FROM employee';
-  // add a left join to match the id to the other table
+  const query = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, employee.manager_id FROM employee LEFT JOIN role ON employee.role_id = role.id;';
+  // add another join to match the manager ID
   connection.query(query, (err, res) => {
     if (err) throw err;
 
