@@ -58,6 +58,7 @@ const promptUser = () => {
 
 const viewEmployees = () => {
   const query = 'SELECT * FROM employee';
+  // add a left join to match the id to the other table
   connection.query(query, (err, res) => {
     if (err) throw err;
 
@@ -156,19 +157,17 @@ const addRole = () => {
 };
 
 const addEmployee = () => {
-  let employees = [];
-  let roles = [];
 
   connection.query(`SELECT * FROM employee`, (err, data) => {
     if (err) throw err;
 
-    data.forEach(empl => employees.push(empl));
+    const employees = data.map(e => ({ name:`${e.first_name} ${e.last_name}`, value:e.id }))
   
 
     connection.query(`SELECT * FROM role`, (err, data) => {
       if (err) throw err;
-
-      data.forEach(job => roles.push(job));
+  
+      const roles = data.map(r => ({ name:r.title, value:r.id }));
     
 
       inquirer
@@ -197,17 +196,11 @@ const addEmployee = () => {
           }
         ])
         .then(function ({ first_name, last_name, role_id, manager_id }) {
-          let queryText = `INSERT INTO employee (first_name, last_name, role_id`;
-          if (manager_id != 'none') {
-              queryText += `, manager_id) VALUES ('${first_name}', '${last_name}', ${roles.indexOf(role_id)}, ${employees.indexOf(manager_id) + 1})`
-          } else {
-              queryText += `) VALUES ('${first_name}', '${last_name}', ${roles.indexOf(role_id) + 1})`
-          }
-          console.log(queryText)
 
-          connection.query(queryText, function (err, data) {
+          connection.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);', [first_name, last_name, role_id, manager_id], function (err, data) {
             if (err) throw err;
 
+            console.log('Employee added!');
             promptUser();
           });
         });
@@ -229,7 +222,7 @@ const updateRoles = () => {
     connection.query(`SELECT * FROM role`, (err, data) => {
       if (err) throw err;
   
-      const roles = data.map(e => ({ name:e.title, value:e.id }));
+      const roles = data.map(r => ({ name:r.title, value:r.id }));
     
         inquirer
           .prompt([
@@ -250,6 +243,7 @@ const updateRoles = () => {
             connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [employee_id, role_id], function (err, data) {
               if (err) throw err;
 
+              console.log('Role updated!')
               promptUser();
             })
           })
