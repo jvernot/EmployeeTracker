@@ -1,7 +1,5 @@
 ## Employee Tracker
 
-![The Employee Tracker Application](/Users/jasonvernot/Desktop/codingFolder/EmployeeTracker/Assets/Employee Tracker.png)
-
 ## Description
 
 This is a fully functioning CMS built using Node.js, Express.js, Inquirer, and MYSQL! This CMS allows a company to organize manage and track their departments, roles and employees. This applications allows the user to view, update or delete employees, as well as add to departments, and roles. 
