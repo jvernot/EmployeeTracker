@@ -104,6 +104,8 @@ const addDepartment = () => {
         .then(answer => {
         console.log(answer.department);
 
+        //go to dept table and search for where it matches answer
+
         connection.query('INSERT INTO department (name) VALUES (?)', [answer.department], (err, res) => {
           if (err) throw err;
 
@@ -215,55 +217,45 @@ const addEmployee = () => {
 };
 
 
-
-
-
-
-
 const updateRoles = () => {
-    connection.query(`SELECT * FROM employee`, (err, data) => {
-        if (err) throw err;
 
-        let employees = [];
-        let roles = [];
+  connection.query(`SELECT * FROM employee`, (err, data) => {
+    if (err) throw err;
+    console.log(data);
 
-        connection.query(`SELECT * FROM employee`, (err, data) => {
-          if (err) throw err;
-      
-          data.forEach(empl => employees.push(empl));
-        
+    const employees = data.map(e => ({ name:e.first_name, value:e.id }))
+    console.log(employees);
 
-          connection.query(`SELECT * FROM role`, (err, data) => {
-            if (err) throw err;
-        
-            data.forEach(job => roles.push(job));
-          
-              inquirer
-                  .prompt([
-                      {
-                          name: 'employee_id',
-                          message: "Who's role needs to be updated",
-                          type: 'list',
-                          choices: employees
-                      },
-                      {
-                          name: 'role_id',
-                          message: "What is the new role?",
-                          type: 'list',
-                          choices: roles
-                      }
-                  ]).then(function ({ employee_id, role_id }) {
-                      
-                    connection.query(`UPDATE employee SET role_id = ${roles.indexOf(role_id) + 1} WHERE id = ${employees.indexOf(employee_id) + 1}`, function (err, data) {
-                      if (err) throw err;
+    connection.query(`SELECT * FROM role`, (err, data) => {
+      if (err) throw err;
+  
+      const roles = data.map(e => ({ name:e.title, value:e.id }));
+    
+        inquirer
+          .prompt([
+            {
+              name: 'employee_id',
+              message: "Which employees role needs to be updated",
+              type: 'list',
+              choices: employees
+            },
+            {
+              name: 'role_id',
+              message: "What is the new role?",
+              type: 'list',
+              choices: roles
+            }
+          ]).then(function ({ employee_id, role_id }) {
+              
+            connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [employee_id, role_id], function (err, data) {
+              if (err) throw err;
 
-                      promptUser();
-                    })
-                  })
-            });
+              promptUser();
+            })
           })
-        })
-    }
+      });
+    })
+}
 
 
 
