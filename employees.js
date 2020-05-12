@@ -32,7 +32,7 @@ const promptUser = () => {
             name: 'action',
             type: 'list',
             message: 'What would you like to do?',
-            choices: ['View all employees', 'Add to departments, roles, or employees.', 'Update emplyee roles', 'exit']
+            choices: ['View all employees', 'Add to departments, roles, or employees.', 'Update emplyee roles', 'Delete Employee', 'Exit']
         })
         .then(answer => {
             switch (answer.action) {
@@ -47,8 +47,12 @@ const promptUser = () => {
               case 'Update emplyee roles':
                 updateRoles();
                 break;
+              
+              case 'Delete Employee':
+                deleteEmployee();
+                break;
       
-              case 'exit':
+              case 'Exit':
                 connection.end();
                 break;
             }
@@ -57,8 +61,9 @@ const promptUser = () => {
 
 
 const viewEmployees = () => {
-  const query = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, employee.manager_id FROM employee LEFT JOIN role ON employee.role_id = role.id;';
+  const query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, employee.manager_id FROM employee LEFT JOIN role ON employee.role_id = role.id;";
   // add another join to match the manager ID
+  const queryTwo = " SELECT CONCAT(E.first_name,' ', E.last_name) AS Employee, CONCAT(M.first_name, ' ', M.last_name) AS Manager FROM employee E LEFT JOIN employee M ON E.manager_id = M.id;";
   connection.query(query, (err, res) => {
     if (err) throw err;
 
@@ -249,6 +254,38 @@ const updateRoles = () => {
           })
       });
     })
+}
+
+
+const deleteEmployee = () => {
+  connection.query(`SELECT * FROM employee`, (err, data) => {
+    if (err) throw err;
+    console.log(data);
+
+    const employees = data.map(e => ({ name:`${e.first_name} ${e.last_name}`, value:e.id }))
+    console.log(employees);
+
+    inquirer
+      .prompt([
+        {
+          name: 'delEmployee_id',
+          type: 'list',
+          message: 'Which employee should be deleted?',
+          choices: employees
+        }
+      ])
+      .then(function ({ delEmployee_id }) {
+
+        connection.query('DELETE FROM employee_trackerDB.employee WHERE id = ?;', [delEmployee_id], function (err, data) {
+          if (err) throw err;
+
+          console.log('Employee deleted!');
+          promptUser();
+        });
+      });
+
+
+  });
 }
 
 
