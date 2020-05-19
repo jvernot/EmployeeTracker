@@ -126,39 +126,40 @@ const addRole = () => {
 
   connection.query(`SELECT * FROM department`, (err, data) => {
     if (err) throw err;
+    console.log(data);
 
-    data.forEach(dept => departments.push(dept));
-  });
+    const departments = data.map(d => ({ name:d.name, value:d.id }))
 
-  inquirer
-    .prompt([
-      {
-        name: 'title',
-        type: 'input',
-        message: 'What is the role title?'
-        },
+    inquirer
+      .prompt([
         {
-          name: 'salary',
+          name: 'title',
           type: 'input',
-          message: 'What is the salary for this role?'
-        },
-        {
-          name: 'department_id',
-          type: 'list',
-          message: 'What department is this role in?',
-          choices: departments
-        }
-    ]) 
-    .then(function({ title, salary, department_id }) {
-      // let index = departments.indexOf(department_id);
+          message: 'What is the role title?'
+          },
+          {
+            name: 'salary',
+            type: 'input',
+            message: 'What is the salary for this role?'
+          },
+          {
+            name: 'department_id',
+            type: 'list',
+            message: 'What department is this role in?',
+            choices: departments
+          }
+      ]) 
+      .then(function({ title, salary, department_id }) {
+        // let index = departments.indexOf(department_id);
 
-      connection.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [title, salary, department_id], (err, res) => {
-        if (err) throw err;
-  
-        console.log(`Role Added`);
-        promptUser();
-      });
-    })
+        connection.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [title, salary, department_id], (err, res) => {
+          if (err) throw err;
+    
+          console.log(`Role Added`);
+          promptUser();
+        });
+      })
+  });
 };
 
 const addEmployee = () => {
@@ -229,29 +230,29 @@ const updateRoles = () => {
   
       const roles = data.map(r => ({ name:r.title, value:r.id }));
     
-        inquirer
-          .prompt([
-            {
-              name: 'employee_id',
-              message: "Which employees role needs to be updated",
-              type: 'list',
-              choices: employees
-            },
-            {
-              name: 'role_id',
-              message: "What is the new role?",
-              type: 'list',
-              choices: roles
-            }
-          ]).then(function ({ employee_id, role_id }) {
-              
-            connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [employee_id, role_id], function (err, data) {
-              if (err) throw err;
+      inquirer
+        .prompt([
+          {
+            name: 'employee_id',
+            message: "Which employees role needs to be updated",
+            type: 'list',
+            choices: employees
+          },
+          {
+            name: 'role_id',
+            message: "What is the new role?",
+            type: 'list',
+            choices: roles
+          }
+        ]).then(function ({ employee_id, role_id }) {
+            
+          connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [employee_id, role_id], function (err, data) {
+            if (err) throw err;
 
-              console.log('Role updated!')
-              promptUser();
-            })
+            console.log('Role updated!')
+            promptUser();
           })
+        })
       });
     })
 }
