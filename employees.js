@@ -249,7 +249,7 @@ const updateRoles = () => {
           console.log('role_id:', role_id)
 
             
-          connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [employee_id, role_id], function (err, data) {
+          connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [role_id, employee_id], function (err, data) {
             if (err) throw err;
 
             console.log('Role updated!')
