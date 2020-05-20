@@ -222,7 +222,7 @@ const updateRoles = () => {
     if (err) throw err;
     console.log(data);
 
-    const employees = data.map(e => ({ name:e.first_name, value:e.id }))
+    const employees = data.map(e => ({ name:`${e.first_name} ${e.last_name}`, value:e.id }))
     console.log(employees);
 
     connection.query(`SELECT * FROM role`, (err, data) => {
@@ -245,6 +245,9 @@ const updateRoles = () => {
             choices: roles
           }
         ]).then(function ({ employee_id, role_id }) {
+          console.log('employee_id:', employee_id)
+          console.log('role_id:', role_id)
+
             
           connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [employee_id, role_id], function (err, data) {
             if (err) throw err;
